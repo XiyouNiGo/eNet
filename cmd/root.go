@@ -14,6 +14,7 @@ package cmd
 import (
 	"github.com/XiyouNiGo/eNet/cmd/acl"
 	"github.com/XiyouNiGo/eNet/cmd/nat"
+	"github.com/XiyouNiGo/eNet/cmd/xdp"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -27,5 +28,6 @@ func NewCommand(logger *logrus.Logger) *cobra.Command {
 	}
 	cmd.AddCommand(acl.NewACLCommand(logger))
 	cmd.AddCommand(nat.NewNATCommand(logger))
+	cmd.AddCommand(xdp.NewXDPCommand(logger))
 	return cmd
 }

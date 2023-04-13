@@ -13,8 +13,6 @@ package acl
 
 import (
 	"github.com/XiyouNiGo/eNet/cmd/acl/add"
-	"github.com/XiyouNiGo/eNet/cmd/acl/attach"
-	"github.com/XiyouNiGo/eNet/cmd/acl/detach"
 	"github.com/XiyouNiGo/eNet/cmd/acl/list"
 	"github.com/XiyouNiGo/eNet/cmd/acl/remove"
 	"github.com/sirupsen/logrus"
@@ -27,8 +25,6 @@ func NewACLCommand(logger *logrus.Logger) *cobra.Command {
 		Short: "Command about Access Control List",
 	}
 	cmd.AddCommand(add.NewAddCommand(logger))
-	cmd.AddCommand(attach.NewAttachCommand(logger))
-	cmd.AddCommand(detach.NewDetachCommand(logger))
 	cmd.AddCommand(list.NewListCommand(logger))
 	cmd.AddCommand(remove.NewRemoveCommand(logger))
 	return cmd

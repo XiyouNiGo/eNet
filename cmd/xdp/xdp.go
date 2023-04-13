@@ -9,21 +9,21 @@
  *
  */
 
-package add
+package xdp
 
 import (
+	"github.com/XiyouNiGo/eNet/cmd/xdp/attach"
+	"github.com/XiyouNiGo/eNet/cmd/xdp/detach"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func NewAddCommand(logger *logrus.Logger) *cobra.Command {
+func NewXDPCommand(logger *logrus.Logger) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "add",
-		Short:   "Appends a new rule to ACL",
-		Example: "TODO",
-		Run: func(cmd *cobra.Command, args []string) {
-			logger.Fatal("This command is being developing.")
-		},
+		Use:   "xdp",
+		Short: "Command about eXpress Data Path",
 	}
+	cmd.AddCommand(attach.NewAttachCommand(logger))
+	cmd.AddCommand(detach.NewDetachCommand(logger))
 	return cmd
 }

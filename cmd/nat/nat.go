@@ -12,6 +12,9 @@
 package nat
 
 import (
+	"github.com/XiyouNiGo/eNet/cmd/nat/add"
+	"github.com/XiyouNiGo/eNet/cmd/nat/list"
+	"github.com/XiyouNiGo/eNet/cmd/nat/remove"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -21,5 +24,8 @@ func NewNATCommand(logger *logrus.Logger) *cobra.Command {
 		Use:   "nat",
 		Short: "Command about Network Address Translation",
 	}
+	cmd.AddCommand(add.NewAddCommand(logger))
+	cmd.AddCommand(list.NewListCommand(logger))
+	cmd.AddCommand(remove.NewRemoveCommand(logger))
 	return cmd
 }
