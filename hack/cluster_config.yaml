@@ -1,0 +1,13 @@
+# Usage: kind create cluster --config ./hack/cluster_config.yaml
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: cluster-for-enet
+nodes:
+  - role: control-plane
+    extraPortMappings:
+    - containerPort: 9090
+      hostPort: 9090
+      protocol: TCP
+    - containerPort: 9091
+      hostPort: 9091
+      protocol: TCP
