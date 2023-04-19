@@ -9,12 +9,12 @@
  *
  */
 
-package cmd
+package root
 
 import (
-	"github.com/XiyouNiGo/eNet/cmd/acl"
-	"github.com/XiyouNiGo/eNet/cmd/nat"
-	"github.com/XiyouNiGo/eNet/cmd/xdp"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp"
 
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

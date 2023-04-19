@@ -12,7 +12,7 @@
 package main
 
 import (
-	"github.com/XiyouNiGo/eNet/cmd"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/root"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,7 +21,7 @@ func main() {
 	logger.SetFormatter(&logrus.TextFormatter{
 		DisableTimestamp: true,
 	})
-	cmd := cmd.NewCommand(logger)
+	cmd := root.NewCommand(logger)
 	if err := cmd.Execute(); err != nil {
 		logger.Errorf("Failed to execute enet: %v", err)
 	}

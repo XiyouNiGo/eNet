@@ -12,8 +12,8 @@
 package xdp
 
 import (
-	"github.com/XiyouNiGo/eNet/cmd/xdp/attach"
-	"github.com/XiyouNiGo/eNet/cmd/xdp/detach"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/attach"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/detach"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

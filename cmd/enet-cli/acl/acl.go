@@ -12,9 +12,9 @@
 package acl
 
 import (
-	"github.com/XiyouNiGo/eNet/cmd/acl/add"
-	"github.com/XiyouNiGo/eNet/cmd/acl/list"
-	"github.com/XiyouNiGo/eNet/cmd/acl/remove"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl/add"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl/list"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl/remove"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

@@ -12,9 +12,9 @@
 package nat
 
 import (
-	"github.com/XiyouNiGo/eNet/cmd/nat/add"
-	"github.com/XiyouNiGo/eNet/cmd/nat/list"
-	"github.com/XiyouNiGo/eNet/cmd/nat/remove"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat/add"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat/list"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat/remove"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

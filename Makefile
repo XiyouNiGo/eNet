@@ -15,11 +15,11 @@ CLANG := clang
 CFLAGS := -O2 -g -Wall -Werror $(CFLAGS)
 
 .PHONY: all
-all: enet
+all: enet-cli
 
-.PHONY: enet
-enet: fmt-go fmt-xdp vet gen-xdp
-	@$(GO) build -o ./_output/enet ./main.go
+.PHONY: enet-cli
+enet-cli: fmt-go fmt-xdp vet gen-xdp
+	@$(GO) build -o ./_output/enet ./cmd/enet-cli/main.go
 
 .PHONY: fmt-go
 fmt-go:
