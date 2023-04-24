@@ -24,7 +24,23 @@ all: enet-cli enet-exporter
 
 .PHONY: enet-cli
 enet-cli: fmt-go fmt-xdp vet gen-xdp
-	@$(GO) build -o ./_output/enet ./cmd/enet-cli/main.go
+	@$(GO) build -o ./_output/$(GOOS)/$(GOARCH)/enet ./cmd/enet-cli/main.go
+
+.PHONY: enet-exporter
+enet-exporter: fmt-go fmt-xdp vet gen-xdp
+	@$(GO) build -o ./_output/$(GOOS)/$(GOARCH)/enet-exporter ./cmd/enet-exporter/main.go
+
+.PHONY: cross
+cross:
+	@mkdir -p _output; \
+	GOOS=linux GOARCH=amd64 make; \
+	GOOS=linux GOARCH=arm64 make; \
+
+.PHONY: cross-in-docker
+cross-in-docker:
+	@mkdir -p _output; \
+	GOOS=linux GOARCH=amd64 ./hack/dockerized make; \
+	GOOS=linux GOARCH=arm64 ./hack/dockerized make; \
 
 .PHONY: fmt-go
 fmt-go:

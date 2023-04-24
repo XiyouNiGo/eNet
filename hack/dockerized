@@ -1,0 +1,16 @@
+BUILDER=${BUILDER:-docker.io/library/ubuntu:latest}
+
+docker pull ${BUILDER}
+
+volume=""
+if [[ -n "${GITCONFIG}" ]]; then
+  volume="-v ${GITCONFIG}:/root/.gitconfig"
+fi
+if [[ -n "${GOCACHE}" ]]; then
+  volume="$volume -v ${GOCACHE}:/root/go"
+fi
+
+docker run --env GOOS=${GOOS} --env GOARCH=${GOARCH} \
+  --env http_proxy=${http_proxy:-} --env https_proxy=${https_proxy:-} \
+  --env no_proxy=${no_proxy:-} --network host -v `pwd`:/code \
+  -w "/code" --rm ${BUILDER} "$@"
