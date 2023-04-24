@@ -5,9 +5,9 @@ name: cluster-for-enet
 nodes:
   - role: control-plane
     extraPortMappings:
-    - containerPort: 9090
+    - containerPort: 30000
       hostPort: 9090
       protocol: TCP
-    - containerPort: 9091
+    - containerPort: 30001
       hostPort: 9091
       protocol: TCP

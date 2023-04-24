@@ -1,7 +1,11 @@
 PROJ_NAME = enet
 PROM_STACK_NS ?= monitoring
-PROM_PORT ?= 9090
-GRAF_PORT ?= 9091
+PROM_SERVICE_PORT ?= 9090
+GRAF_SERVICE_PORT ?= 9091
+PROM_NODEPORT ?= 30000
+GRAF_NODEPORT ?= 30001
+PROM_TARGET_PORT ?= 9090
+GRAF_TARGET_PORT ?= 3000
 SHELL := /bin/bash
 ifeq (,$(shell go env GOBIN))
 GOBIN = $(shell go env GOPATH)/bin
@@ -13,9 +17,10 @@ GOARCH = $(shell go env GOARCH)
 GO ?= go
 CLANG := clang
 CFLAGS := -O2 -g -Wall -Werror $(CFLAGS)
+COMMITID = $(shell git rev-parse --short HEAD)
 
 .PHONY: all
-all: enet-cli
+all: enet-cli enet-exporter
 
 .PHONY: enet-cli
 enet-cli: fmt-go fmt-xdp vet gen-xdp
@@ -52,9 +57,25 @@ vendor:
 cover: fmt-go vet test
 	@$(GO) tool cover -html=./_output/coverage.out -o ./_output/coverage.html
 
+.PHONY: cover-in-docker
+cover-in-docker:
+	@mkdir -p _output; \
+	GOOS=linux GOARCH=amd64 ./hack/dockerized make cover; \
+
+.PHONY: build-img
+build-img:
+	@cp -f ./hack/Dockerfile ./_output; \
+	docker buildx build --platform=linux/amd64,linux/arm64 \
+		-t github.com/xiyounigo/enet:$(COMMITID) ./_output/; \
+	echo github.com/xiyounigo/enet:$(COMMITID) > ./_output/images.txt; \
+
 .PHONY: clean
 clean:
 	@rm -rf ./_output
+
+.PHONY: clean-in-docker
+clean-in-docker:
+	@./hack/dockerized make clean
 
 .PHONY: deploy
 deploy: deploy-prom-stack
@@ -62,7 +83,8 @@ deploy: deploy-prom-stack
 .PHONY: deploy-prom-stack
 deploy-prom-stack:
 	@helm upgrade -f ./hack/charts/kube-prometheus-stack/values.yaml --install enet kube-prometheus-stack --namespace ${PROM_STACK_NS} --create-namespace --repo https://prometheus-community.github.io/helm-charts; \
-	kubectl -n ${PROM_STACK_NS} expose service ${PROJ_NAME}-grafana --type=NodePort --port=${GRAF_PORT} --target-port=3000 --name=${PROJ_NAME}-grafana-nodeport; \
+	kubectl -n ${PROM_STACK_NS} delete service ${PROJ_NAME}-grafana > /dev/null; \
+	kubectl -n ${PROM_STACK_NS} expose deployment ${PROJ_NAME}-grafana --type=NodePort --port=${GRAF_SERVICE_PORT} --target-port=${GRAF_TARGET_PORT} --name=${PROJ_NAME}-grafana --overrides='{ "apiVersion": "v1","spec":{"ports": [{"port":${GRAF_SERVICE_PORT},"protocol":"TCP","targetPort":${GRAF_TARGET_PORT},"nodePort":${GRAF_NODEPORT}}]}}'\
 
 .PHONY: undeploy
 undeploy: undeploy-prom-stack
@@ -70,11 +92,10 @@ undeploy: undeploy-prom-stack
 .PHONY: undeploy-prom-stack
 undeploy-prom-stack:
 	@helm delete ${PROJ_NAME} --namespace ${PROM_STACK_NS}; \
-	kubectl -n ${PROM_STACK_NS} delete svc ${PROJ_NAME}-grafana-nodeport; \
 
 .PHONY: create-cluster
 create-cluster:
-	@kind create cluster --config ./hack/cluster_config.yml
+	@kind create cluster --config ./hack/cluster_config.yaml
 
 .PHONY: delete-cluster
 delete-cluster:
@@ -82,9 +103,9 @@ delete-cluster:
 
 .PHONY: port-forward
 port-forward:
-	@killall kubectl &>/dev/null; \
-  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-kube-prometheus-stack-prometheus 8080:${PROM_PORT} > /dev/null &); \
-  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-grafana-nodeport 8081:${GRAF_PORT} > /dev/null &); \
+	@killall kubectl &> /dev/null; \
+  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-kube-prometheus-stack-prometheus 8000:${PROM_SERVICE_PORT} > /dev/null &); \
+  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-grafana 8001:${GRAF_SERVICE_PORT} > /dev/null &); \
   echo "Started port-forward commands"; \
-  echo "localhost:8080 - prometheus"; \
-  echo "localhost:8081 - grafana"; \
+  echo "localhost:8000 - prometheus"; \
+  echo "localhost:8001 - grafana"; \

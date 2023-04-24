@@ -772,7 +772,7 @@ grafana:
   ##
   defaultDashboardsTimezone: utc
 
-  adminPassword: prom-operator
+  adminPassword: enet
 
   rbac:
     ## If true, Grafana PSPs will be created
@@ -2367,7 +2367,7 @@ prometheus:
     ## Port to expose on each node
     ## Only used if service.type is 'NodePort'
     ##
-    nodePort: 30090
+    nodePort: 30000
 
     ## Loadbalancer IP
     ## Only use if service.type is "LoadBalancer"
