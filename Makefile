@@ -78,12 +78,12 @@ cover-in-docker:
 	@mkdir -p _output; \
 	GOOS=linux GOARCH=amd64 ./hack/dockerized make cover; \
 
-.PHONY: build-img
-build-img:
+.PHONY: push
+push:
 	@cp -f ./hack/Dockerfile ./_output; \
-	docker buildx build --platform=linux/amd64,linux/arm64 \
-		-t github.com/xiyounigo/enet:$(COMMITID) ./_output/; \
-	echo github.com/xiyounigo/enet:$(COMMITID) > ./_output/images.txt; \
+	docker buildx build --push --platform=linux/amd64,linux/arm64 \
+		-t xiyounigo/enet:$(COMMITID) -t xiyounigo/enet:latest ./_output/; \
+	echo xiyounigo/enet:$(COMMITID) > ./_output/images.txt; \
 
 .PHONY: clean
 clean:
