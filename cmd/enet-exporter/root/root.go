@@ -41,7 +41,7 @@ func NewCommand(logger *logrus.Logger) *cobra.Command {
 			}
 		},
 	}
-	cmd.Flags().Int16VarP(&port, "port", "p", 9003, "Exporter serve port")
+	cmd.Flags().Int16VarP(&port, "port", "p", 9002, "Exporter serve port")
 	cmd.Flags().StringVarP(&url, "url", "u", "/metrics", "Exporter serve url")
 	return cmd
 }

@@ -1,11 +1,18 @@
 PROJ_NAME = enet
 PROM_STACK_NS ?= monitoring
+ENET_NS ?= enet
 PROM_SERVICE_PORT ?= 9090
 GRAF_SERVICE_PORT ?= 9091
+EXP_SERVICE_PORT ?= 9092
 PROM_NODEPORT ?= 30000
 GRAF_NODEPORT ?= 30001
+EXP_NODEPORT ?= 30002
 PROM_TARGET_PORT ?= 9090
 GRAF_TARGET_PORT ?= 3000
+EXP_TARGET_PORT ?= 9092
+PROM_FORWARD_PORT ?= 8000
+GRAF_FORWARD_PORT ?= 8001
+EXP_FORWARD_PORT ?= 8002
 SHELL := /bin/bash
 ifeq (,$(shell go env GOBIN))
 GOBIN = $(shell go env GOPATH)/bin
@@ -82,8 +89,9 @@ cover-in-docker:
 push:
 	@cp -f ./hack/Dockerfile ./_output; \
 	docker buildx build --push --platform=linux/amd64,linux/arm64 \
-		-t xiyounigo/enet:$(COMMITID) -t xiyounigo/enet:latest ./_output/; \
-	echo xiyounigo/enet:$(COMMITID) > ./_output/images.txt; \
+		-t xiyounigo/enet-exporter:$(COMMITID) \
+		-t xiyounigo/enet-exporter:latest ./_output/; \
+	echo xiyounigo/enet-exporter:$(COMMITID) > ./_output/images.txt; \
 
 .PHONY: clean
 clean:
@@ -94,20 +102,32 @@ clean-in-docker:
 	@./hack/dockerized make clean
 
 .PHONY: deploy
-deploy: deploy-prom-stack
+deploy: deploy-prom-stack deploy-enet-exporter
+	@echo 'kube-prom-stack and enet-exporter have been deployed.'
 
 .PHONY: deploy-prom-stack
 deploy-prom-stack:
-	@helm upgrade -f ./hack/charts/kube-prometheus-stack/values.yaml --install enet kube-prometheus-stack --namespace ${PROM_STACK_NS} --create-namespace --repo https://prometheus-community.github.io/helm-charts; \
+	@helm upgrade -f ./hack/charts/kube-prometheus-stack/values.yaml --install enet kube-prometheus-stack --namespace ${PROM_STACK_NS} --create-namespace --repo https://prometheus-community.github.io/helm-charts > /dev/null; \
 	kubectl -n ${PROM_STACK_NS} delete service ${PROJ_NAME}-grafana > /dev/null; \
 	kubectl -n ${PROM_STACK_NS} expose deployment ${PROJ_NAME}-grafana --type=NodePort --port=${GRAF_SERVICE_PORT} --target-port=${GRAF_TARGET_PORT} --name=${PROJ_NAME}-grafana --overrides='{ "apiVersion": "v1","spec":{"ports": [{"port":${GRAF_SERVICE_PORT},"protocol":"TCP","targetPort":${GRAF_TARGET_PORT},"nodePort":${GRAF_NODEPORT}}]}}'\
 
+.PHONY: deploy-enet-exporter
+deploy-enet-exporter:
+	@kubectl create ns ${ENET_NS} > /dev/null; \
+	helm template --release-name enet ./hack/charts/enet-exporter | kubectl -n ${ENET_NS} apply -f -; \
+
 .PHONY: undeploy
-undeploy: undeploy-prom-stack
+undeploy: undeploy-prom-stack undeploy-enet-exporter
+	@echo 'kube-prometheus-stack and enet-exporter have been undeployed.'
 	
 .PHONY: undeploy-prom-stack
 undeploy-prom-stack:
 	@helm delete ${PROJ_NAME} --namespace ${PROM_STACK_NS}; \
+
+.PHONY: undeploy-enet-exporter
+undeploy-enet-exporter:
+	@helm template --release-name enet ./hack/charts/enet-exporter | kubectl -n ${ENET_NS} delete -f -; \
+	kubectl delete ns ${ENET_NS} > /dev/null; \
 
 .PHONY: create-cluster
 create-cluster:
@@ -120,8 +140,10 @@ delete-cluster:
 .PHONY: port-forward
 port-forward:
 	@killall kubectl &> /dev/null; \
-  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-kube-prometheus-stack-prometheus 8000:${PROM_SERVICE_PORT} > /dev/null &); \
-  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-grafana 8001:${GRAF_SERVICE_PORT} > /dev/null &); \
+  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-kube-prometheus-stack-prometheus ${PROM_FORWARD_PORT}:${PROM_SERVICE_PORT} > /dev/null &); \
+  (kubectl -n ${PROM_STACK_NS} port-forward services/${PROJ_NAME}-grafana ${GRAF_FORWARD_PORT}:${GRAF_SERVICE_PORT} > /dev/null &); \
+  (kubectl -n ${ENET_NS} port-forward services/${PROJ_NAME}-exporter ${EXP_FORWARD_PORT}:${EXP_SERVICE_PORT} > /dev/null &); \
   echo "Started port-forward commands"; \
-  echo "localhost:8000 - prometheus"; \
-  echo "localhost:8001 - grafana"; \
+  echo "localhost:${PROM_FORWARD_PORT} - prometheus"; \
+  echo "localhost:${GRAF_FORWARD_PORT} - grafana"; \
+  echo "localhost:${EXP_FORWARD_PORT} - enet exporter"; \

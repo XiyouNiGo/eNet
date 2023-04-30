@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "enet-exporter.fullname" . }}
+  labels:
+    {{- include "enet-exporter.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - port: http
+    path: {{ .Values.enet.url }}
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      {{- include "enet-exporter.selectorLabels" . | nindent 6 }}
