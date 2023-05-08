@@ -13,6 +13,7 @@ package xdp
 
 import (
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/attach"
+	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/detach"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -23,5 +24,6 @@ func NewXDPCommand(logger *logrus.Logger) *cobra.Command {
 		Short: "Command about eXpress Data Path",
 	}
 	cmd.AddCommand(attach.NewAttachCommand(logger))
+	cmd.AddCommand(detach.NewDetachCommand(logger))
 	return cmd
 }

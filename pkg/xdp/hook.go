@@ -25,13 +25,14 @@ import (
 // Hook provides a set of operations that allow for managing the execution of the XDP program
 // including attaching it on the network interface, or removing the program from the interface.
 type Hook struct {
-	bpfObjs bpfObjects
-	pinPath string
-	bpfLink link.Link
+	bpfObjs  bpfObjects
+	pinPath  string
+	bpfLink  link.Link
+	progType XDPProgType
 }
 
 // NewHook constructs a new instance of the XDP hook from provided XDP code.
-func NewHook(pinPath string) (*Hook, error) {
+func NewHook(pinPath string, progType XDPProgType) (*Hook, error) {
 	if err := rlimit.RemoveMemlock(); err != nil {
 		log.Fatalf("Failed to remove memory lock: %v", err)
 	}
@@ -39,7 +40,8 @@ func NewHook(pinPath string) (*Hook, error) {
 		log.Fatalf("Failed to create bpf fs subpath: %v", err)
 	}
 	hook := Hook{
-		pinPath: pinPath,
+		pinPath:  pinPath,
+		progType: progType,
 	}
 	if err := loadBpfObjects(&hook.bpfObjs, &ebpf.CollectionOptions{
 		Maps: ebpf.MapOptions{
@@ -66,39 +68,32 @@ func (h *Hook) Attach(device string, mode link.XDPAttachFlags) error {
 		log.Fatalf("Failed to attach XDP program: %v", err)
 	}
 	h.bpfLink = l
-	if err := l.Pin(path.Join(h.pinPath, "xdp_acl")); err != nil {
+	if err := l.Pin(path.Join(h.pinPath, ToXDPProgName(h.progType))); err != nil {
 		log.Fatalf("Failed to pin XDP program on %v: %v", h.pinPath, err)
 	}
 	return nil
 }
 
-// TODO: fix bug device or resource busy
-// // Remove unloads the XDP program from the interface.
-// func (h *Hook) Remove(device string) error {
-// 	nlink, err := netlink.LinkByName(device)
-// 	if err != nil {
-// 		log.Fatalf("Failed to find link %v: %v", device, err)
-// 	}
-// 	return netlink.LinkSetXdpFdWithFlags(nlink, -1, 0)
-// }
+// Remove unloads the XDP program from the interface.
+func (h *Hook) Remove() error {
+	l, err := link.LoadPinnedLink(path.Join(h.pinPath, ToXDPProgName(h.progType)), &ebpf.LoadPinOptions{})
+	if err != nil {
+		log.Fatalf("Failed to attach XDP program: %v", err)
+	}
+	h.bpfLink = l
+	if err := l.Unpin(); err != nil {
+		log.Fatalf("Failed to unpin XDP program on %v: %v", h.pinPath, err)
+	}
+	return nil
+}
 
 // Close closes the underlying eBPF module by disposing any allocated resources.
 func (h *Hook) Close() error {
-	if err := h.bpfLink.Unpin(); err != nil {
-		log.Fatalf("Failed to unpin XDP program on %v: %v", h.pinPath, err)
-	}
 	if err := h.bpfLink.Close(); err != nil {
 		log.Fatalf("Failed to close bpf link: %v", err)
 	}
 	if err := h.bpfObjs.Close(); err != nil {
 		log.Fatalf("Failed to close bpf object: %v", err)
-	}
-	return nil
-}
-
-func (h *Hook) Unpin() error {
-	if err := h.bpfLink.Unpin(); err != nil {
-		log.Fatalf("Failed to unpin XDP program on %v: %v", h.pinPath, err)
 	}
 	return nil
 }

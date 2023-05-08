@@ -14,7 +14,6 @@ package attach
 import (
 	"path"
 
-	"github.com/XiyouNiGo/eNet/pkg/signal"
 	"github.com/XiyouNiGo/eNet/pkg/xdp"
 	"github.com/cilium/ebpf/link"
 	"github.com/sirupsen/logrus"
@@ -57,7 +56,7 @@ func NewAttachCommand(logger *logrus.Logger) *cobra.Command {
 					return link.XDPGenericMode
 				}
 			}()
-			hook, err := xdp.NewHook(pinPath)
+			hook, err := xdp.NewHook(pinPath, xdp.XDPProgTypeACL)
 			if err != nil {
 				logger.Fatalf("Failed to new hook: %v", err)
 			}
@@ -67,11 +66,6 @@ func NewAttachCommand(logger *logrus.Logger) *cobra.Command {
 					toXDPModeString(mode), err)
 			}
 			logger.Infof("XDP program successfully attached to %v device in mode %v",
-				device, toXDPModeString(mode))
-			shutdown := signal.SetupSignalHandler()
-			<-shutdown
-			hook.Unpin()
-			logger.Infof("XDP program successfully detached from %v device in mode %v",
 				device, toXDPModeString(mode))
 		},
 	}
