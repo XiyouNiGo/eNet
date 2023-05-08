@@ -30,11 +30,11 @@ COMMITID = $(shell git rev-parse --short HEAD)
 all: enet-cli enet-exporter
 
 .PHONY: enet-cli
-enet-cli: fmt-go fmt-xdp vet gen-xdp
+enet-cli: fmt-go vet gen-xdp
 	@$(GO) build -o ./_output/$(GOOS)/$(GOARCH)/enet ./cmd/enet-cli/main.go
 
 .PHONY: enet-exporter
-enet-exporter: fmt-go fmt-xdp vet gen-xdp
+enet-exporter: fmt-go vet gen-xdp
 	@$(GO) build -o ./_output/$(GOOS)/$(GOARCH)/enet-exporter ./cmd/enet-exporter/main.go
 
 .PHONY: cross
@@ -59,9 +59,11 @@ gen-xdp: export BPF_CFLAGS := $(CFLAGS)
 gen-xdp:
 	@$(GO) generate ./...
 
+# We need to perform this manually
 .PHONY: fmt-xdp
 fmt-xdp:
-	@clang-format --style=Google -i ./pkg/xdp/*.c
+	@clang-format --style=Google -i ./pkg/xdp/*.c; \
+	clang-format --style=Google -i ./pkg/xdp/map.h; \
 
 .PHONY: vet
 vet:

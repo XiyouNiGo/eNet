@@ -12,8 +12,21 @@
 package list
 
 import (
+	"fmt"
+	"log"
+	"net"
+	"path"
+	"strings"
+	"time"
+
+	"github.com/XiyouNiGo/eNet/pkg/xdp"
+	"github.com/cilium/ebpf"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+)
+
+var (
+	pinPath string
 )
 
 func NewListCommand(logger *logrus.Logger) *cobra.Command {
@@ -22,8 +35,40 @@ func NewListCommand(logger *logrus.Logger) *cobra.Command {
 		Short:   "Shows all rules registered in ACL",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
-			logger.Fatal("This command is being developing.")
+			hook, err := xdp.NewHook(pinPath)
+			if err != nil {
+				logger.Fatalf("Failed to new hook: %v", err)
+			}
+			defer hook.Close()
+			ticker := time.NewTicker(1 * time.Second)
+			defer ticker.Stop()
+			for range ticker.C {
+				s, err := formatMapContents(hook.BPFObject().XdpStatsMap)
+				if err != nil {
+					log.Printf("Error reading map: %s", err)
+					continue
+				}
+				log.Printf("Map contents:\n%s", s)
+			}
 		},
 	}
+	cmd.Flags().StringVarP(&pinPath, "pin-path", "p", path.Join(xdp.BpfFsPath,
+		xdp.Namespace), "Path to pin up XDP program and map")
+	cmd.MarkFlagFilename("pin-path")
 	return cmd
+}
+
+func formatMapContents(m *ebpf.Map) (string, error) {
+	var (
+		sb  strings.Builder
+		key []byte
+		val uint32
+	)
+	iter := m.Iterate()
+	for iter.Next(&key, &val) {
+		sourceIP := net.IP(key) // IPv4 source address in network byte order.
+		packetCount := val
+		sb.WriteString(fmt.Sprintf("\t%s => %d\n", sourceIP, packetCount))
+	}
+	return sb.String(), iter.Err()
 }

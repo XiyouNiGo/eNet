@@ -1,4 +1,4 @@
-BUILDER=${BUILDER:-docker.io/library/ubuntu:latest}
+BUILDER=${BUILDER:-ghcr.io/cilium/ebpf-builder}
 
 docker pull ${BUILDER}
 
