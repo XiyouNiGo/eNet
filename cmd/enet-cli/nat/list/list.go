@@ -19,7 +19,7 @@ import (
 func NewListCommand(logger *logrus.Logger) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
-		Short:   "Shows all rules registered in NAT",
+		Short:   "Show all rules registered in NAT",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
 			logger.Fatal("This command is being developing.")

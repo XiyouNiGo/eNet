@@ -9,9 +9,10 @@
  *
  */
 
-package detach
+package purge
 
 import (
+	"os"
 	"path"
 
 	"github.com/XiyouNiGo/eNet/pkg/xdp"
@@ -23,21 +24,16 @@ var (
 	pinPath string
 )
 
-func NewDetachCommand(logger *logrus.Logger) *cobra.Command {
+func NewPurgeCommand(logger *logrus.Logger) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:     "detach",
-		Short:   "Remove the XDP program from the specified device",
+		Use:     "purge",
+		Short:   "Purge the XDP program and map",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
-			hook, err := xdp.NewHook(pinPath, xdp.XDPProgTypeACL)
-			if err != nil {
-				logger.Fatalf("Failed to new hook: %v", err)
+			if err := os.RemoveAll(pinPath); err != nil {
+				logger.Fatalf("Failed to purge XDP program and map on %v: %v", pinPath, err)
 			}
-			defer hook.Close()
-			if err := hook.Remove(); err != nil {
-				logger.Fatalf("Failed to detach hook: %v", err)
-			}
-			logger.Infof("XDP program successfully detached from %v", pinPath)
+			logger.Infof("XDP program and map successfully purged from %v", pinPath)
 		},
 	}
 	cmd.Flags().StringVarP(&pinPath, "pin-path", "p", path.Join(xdp.BpfFsPath,

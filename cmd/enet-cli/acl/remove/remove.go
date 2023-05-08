@@ -19,7 +19,7 @@ import (
 func NewRemoveCommand(logger *logrus.Logger) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "remove",
-		Short:   "Removes a rule from ACL",
+		Short:   "Remove a rule from ACL",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
 			logger.Fatal("This command is being developing.")

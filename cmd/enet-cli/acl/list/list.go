@@ -32,7 +32,7 @@ var (
 func NewListCommand(logger *logrus.Logger) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
-		Short:   "Shows all rules registered in ACL",
+		Short:   "Show all rules registered in ACL",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
 			hook, err := xdp.NewHook(pinPath, xdp.XDPProgTypeACL)
