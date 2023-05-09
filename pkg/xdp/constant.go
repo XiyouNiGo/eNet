@@ -17,25 +17,5 @@ const (
 )
 
 const (
-	XDPACLProgName     = "xdp_acl_prog"
-	XDPNATProgName     = "xdp_nat_prog"
-	XDPUnknownProgName = "unknown"
+	EnetProgName = "enet_prog"
 )
-
-type XDPProgType uint8
-
-const (
-	XDPProgTypeACL XDPProgType = 1 << iota
-	XDPProgTypeNAT
-)
-
-func ToXDPProgName(prog_type XDPProgType) string {
-	switch prog_type {
-	case XDPProgTypeACL:
-		return XDPACLProgName
-	case XDPProgTypeNAT:
-		return XDPNATProgName
-	default:
-		return XDPUnknownProgName
-	}
-}

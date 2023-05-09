@@ -54,7 +54,7 @@ type bpfSpecs struct {
 //
 // It can be passed ebpf.CollectionSpec.Assign.
 type bpfProgramSpecs struct {
-	XdpAclFunc *ebpf.ProgramSpec `ebpf:"xdp_acl_func"`
+	EnetFunc *ebpf.ProgramSpec `ebpf:"enet_func"`
 }
 
 // bpfMapSpecs contains maps before they are loaded into the kernel.
@@ -96,12 +96,12 @@ func (m *bpfMaps) Close() error {
 //
 // It can be passed to loadBpfObjects or ebpf.CollectionSpec.LoadAndAssign.
 type bpfPrograms struct {
-	XdpAclFunc *ebpf.Program `ebpf:"xdp_acl_func"`
+	EnetFunc *ebpf.Program `ebpf:"enet_func"`
 }
 
 func (p *bpfPrograms) Close() error {
 	return _BpfClose(
-		p.XdpAclFunc,
+		p.EnetFunc,
 	)
 }
 

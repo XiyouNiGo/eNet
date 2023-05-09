@@ -56,8 +56,8 @@ static __always_inline int parse_ip_src_addr(struct xdp_md *ctx, __u32 *ip_src_a
 	return 1;
 }
 
-SEC("xdp_acl")
-int xdp_acl_func(struct xdp_md *ctx) {
+SEC("enet")
+int enet_func(struct xdp_md *ctx) {
 	__u32 ip;
 	if (!parse_ip_src_addr(ctx, &ip)) {
 		// Not an IPv4 packet, so don't count it.

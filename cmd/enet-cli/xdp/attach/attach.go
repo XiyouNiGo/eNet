@@ -56,7 +56,7 @@ func NewAttachCommand(logger *logrus.Logger) *cobra.Command {
 					return link.XDPGenericMode
 				}
 			}()
-			hook, err := xdp.NewHook(pinPath, xdp.XDPProgTypeACL)
+			hook, err := xdp.NewHook(pinPath)
 			if err != nil {
 				logger.Fatalf("Failed to new hook: %v", err)
 			}

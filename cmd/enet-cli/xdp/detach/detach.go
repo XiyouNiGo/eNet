@@ -29,7 +29,7 @@ func NewDetachCommand(logger *logrus.Logger) *cobra.Command {
 		Short:   "Remove the XDP program from the specified device",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
-			hook, err := xdp.NewHook(pinPath, xdp.XDPProgTypeACL)
+			hook, err := xdp.NewHook(pinPath)
 			if err != nil {
 				logger.Fatalf("Failed to new hook: %v", err)
 			}

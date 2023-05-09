@@ -25,14 +25,13 @@ import (
 // Hook provides a set of operations that allow for managing the execution of the XDP program
 // including attaching it on the network interface, or removing the program from the interface.
 type Hook struct {
-	bpfObjs  bpfObjects
-	pinPath  string
-	bpfLink  link.Link
-	progType XDPProgType
+	bpfObjs bpfObjects
+	pinPath string
+	bpfLink link.Link
 }
 
 // NewHook constructs a new instance of the XDP hook from provided XDP code.
-func NewHook(pinPath string, progType XDPProgType) (*Hook, error) {
+func NewHook(pinPath string) (*Hook, error) {
 	if err := rlimit.RemoveMemlock(); err != nil {
 		log.Fatalf("Failed to remove memory lock: %v", err)
 	}
@@ -40,8 +39,7 @@ func NewHook(pinPath string, progType XDPProgType) (*Hook, error) {
 		log.Fatalf("Failed to create bpf fs subpath: %v", err)
 	}
 	hook := Hook{
-		pinPath:  pinPath,
-		progType: progType,
+		pinPath: pinPath,
 	}
 	if err := loadBpfObjects(&hook.bpfObjs, &ebpf.CollectionOptions{
 		Maps: ebpf.MapOptions{
@@ -60,7 +58,7 @@ func (h *Hook) Attach(device string, mode link.XDPAttachFlags) error {
 		log.Fatalf("Failed to lookup network interface[%v]: %v", device, err)
 	}
 	l, err := link.AttachXDP(link.XDPOptions{
-		Program:   h.bpfObjs.XdpAclFunc,
+		Program:   h.bpfObjs.EnetFunc,
 		Interface: iface.Index,
 		Flags:     mode,
 	})
@@ -68,7 +66,7 @@ func (h *Hook) Attach(device string, mode link.XDPAttachFlags) error {
 		log.Fatalf("Failed to attach XDP program: %v", err)
 	}
 	h.bpfLink = l
-	if err := l.Pin(path.Join(h.pinPath, ToXDPProgName(h.progType))); err != nil {
+	if err := l.Pin(path.Join(h.pinPath, EnetProgName)); err != nil {
 		log.Fatalf("Failed to pin XDP program on %v: %v", h.pinPath, err)
 	}
 	return nil
@@ -76,7 +74,7 @@ func (h *Hook) Attach(device string, mode link.XDPAttachFlags) error {
 
 // Remove unloads the XDP program from the interface.
 func (h *Hook) Remove() error {
-	l, err := link.LoadPinnedLink(path.Join(h.pinPath, ToXDPProgName(h.progType)), &ebpf.LoadPinOptions{})
+	l, err := link.LoadPinnedLink(path.Join(h.pinPath, EnetProgName), &ebpf.LoadPinOptions{})
 	if err != nil {
 		log.Fatalf("Failed to attach XDP program: %v", err)
 	}
