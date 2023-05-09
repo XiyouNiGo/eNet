@@ -16,6 +16,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"syscall"
 
 	"github.com/cilium/ebpf"
 	"github.com/cilium/ebpf/link"
@@ -36,7 +37,13 @@ func NewHook(pinPath string) (*Hook, error) {
 		log.Fatalf("Failed to remove memory lock: %v", err)
 	}
 	if err := os.MkdirAll(pinPath, os.ModePerm); err != nil {
-		log.Fatalf("Failed to create bpf fs subpath: %v", err)
+		if os.IsNotExist(err) {
+			if merr := syscall.Mount("bpf", BpfFsPath, "bpf", 0, "rw"); merr != nil {
+				log.Fatalf("Failed to mount bps file system path: %v", merr)
+			}
+		} else {
+			log.Fatalf("Failed to create bpf fs subpath: %v", err)
+		}
 	}
 	hook := Hook{
 		pinPath: pinPath,

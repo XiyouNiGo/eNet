@@ -56,7 +56,7 @@ static __always_inline int parse_ip_src_addr(struct xdp_md *ctx, __u32 *ip_src_a
 	return 1;
 }
 
-SEC("enet")
+SEC("xdp")
 int enet_func(struct xdp_md *ctx) {
 	__u32 ip;
 	if (!parse_ip_src_addr(ctx, &ip)) {
