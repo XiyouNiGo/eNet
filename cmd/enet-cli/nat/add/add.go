@@ -16,13 +16,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewAddCommand(logger *logrus.Logger) *cobra.Command {
+func NewAddCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "add",
 		Short:   "Append a new rule to NAT",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
-			logger.Fatal("This command is being developing.")
+			logrus.Fatal("This command is being developing.")
 		},
 	}
 	return cmd

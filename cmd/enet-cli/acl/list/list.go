@@ -29,7 +29,7 @@ var (
 	pinPath string
 )
 
-func NewListCommand(logger *logrus.Logger) *cobra.Command {
+func NewListCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "list",
 		Short:   "Show all rules registered in ACL",
@@ -37,13 +37,13 @@ func NewListCommand(logger *logrus.Logger) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			hook, err := xdp.NewHook(pinPath)
 			if err != nil {
-				logger.Fatalf("Failed to new hook: %v", err)
+				logrus.Fatalf("Failed to new hook: %v", err)
 			}
 			defer hook.Close()
 			ticker := time.NewTicker(1 * time.Second)
 			defer ticker.Stop()
 			for range ticker.C {
-				s, err := formatMapContents(hook.BPFObject().XdpStatsMap)
+				s, err := formatMapContents(hook.BPFObject().EnetAclActionMap)
 				if err != nil {
 					log.Printf("Error reading map: %s", err)
 					continue

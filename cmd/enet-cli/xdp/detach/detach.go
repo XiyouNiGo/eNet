@@ -23,21 +23,22 @@ var (
 	pinPath string
 )
 
-func NewDetachCommand(logger *logrus.Logger) *cobra.Command {
+func NewDetachCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "detach",
 		Short:   "Remove the XDP program from the specified device",
 		Example: "TODO",
+		Args:    cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
 			hook, err := xdp.NewHook(pinPath)
 			if err != nil {
-				logger.Fatalf("Failed to new hook: %v", err)
+				logrus.Fatalf("Failed to new hook: %v", err)
 			}
 			defer hook.Close()
 			if err := hook.Remove(); err != nil {
-				logger.Fatalf("Failed to detach hook: %v", err)
+				logrus.Fatalf("Failed to detach hook: %v", err)
 			}
-			logger.Infof("XDP program successfully detached from %v", pinPath)
+			logrus.Infof("XDP program successfully detached from %v", pinPath)
 		},
 	}
 	cmd.Flags().StringVarP(&pinPath, "pin-path", "p", path.Join(xdp.BpfFsPath,

@@ -38,7 +38,7 @@ func toXDPModeString(flags link.XDPAttachFlags) string {
 	}
 }
 
-func NewAttachCommand(logger *logrus.Logger) *cobra.Command {
+func NewAttachCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "attach",
 		Short:   "Attach the XDP program on the specified device",
@@ -58,14 +58,14 @@ func NewAttachCommand(logger *logrus.Logger) *cobra.Command {
 			}()
 			hook, err := xdp.NewHook(pinPath)
 			if err != nil {
-				logger.Fatalf("Failed to new hook: %v", err)
+				logrus.Fatalf("Failed to new hook: %v", err)
 			}
 			defer hook.Close()
 			if err := hook.Attach(device, mode); err != nil {
-				logger.Fatalf("Failed to attach hook in mode %v: %v",
+				logrus.Fatalf("Failed to attach hook in mode %v: %v",
 					toXDPModeString(mode), err)
 			}
-			logger.Infof("XDP program successfully attached to %v device in mode %v",
+			logrus.Infof("XDP program successfully attached to %v device in mode %v",
 				device, toXDPModeString(mode))
 		},
 	}

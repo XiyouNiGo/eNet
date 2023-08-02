@@ -12,18 +12,28 @@
 package add
 
 import (
+	"github.com/XiyouNiGo/eNet/pkg/model"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func NewAddCommand(logger *logrus.Logger) *cobra.Command {
+var (
+	configFile string
+)
+
+func NewAddCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "add",
-		Short:   "Appends a new rule to ACL",
+		Short:   "Append a new rule to ACL",
 		Example: "TODO",
+		Args:    cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			logger.Fatal("This command is being developing.")
+			rules := model.NewACLRules(configFile)
+			logrus.Fatal(rules)
 		},
 	}
+	cmd.Flags().StringVarP(&configFile, "config-file", "f", "", "Initial ACL rule config file")
+	cmd.MarkFlagRequired("config-file")
+	cmd.MarkFlagFilename("config-file")
 	return cmd
 }

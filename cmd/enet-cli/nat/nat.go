@@ -15,17 +15,16 @@ import (
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat/add"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat/list"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat/remove"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func NewNATCommand(logger *logrus.Logger) *cobra.Command {
+func NewNATCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "nat",
 		Short: "Command about Network Address Translation",
 	}
-	cmd.AddCommand(add.NewAddCommand(logger))
-	cmd.AddCommand(list.NewListCommand(logger))
-	cmd.AddCommand(remove.NewRemoveCommand(logger))
+	cmd.AddCommand(add.NewAddCommand())
+	cmd.AddCommand(list.NewListCommand())
+	cmd.AddCommand(remove.NewRemoveCommand())
 	return cmd
 }

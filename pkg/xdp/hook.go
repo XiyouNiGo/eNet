@@ -38,8 +38,11 @@ func NewHook(pinPath string) (*Hook, error) {
 	}
 	if err := os.MkdirAll(pinPath, os.ModePerm); err != nil {
 		if os.IsNotExist(err) {
-			if merr := syscall.Mount("bpf", BpfFsPath, "bpf", 0, "rw"); merr != nil {
-				log.Fatalf("Failed to mount bps file system path: %v", merr)
+			if err := syscall.Mount("bpf", BpfFsPath, "bpf", 0, "rw"); err != nil {
+				log.Fatalf("Failed to mount bps file system path: %v", err)
+			}
+			if err := os.MkdirAll(pinPath, os.ModePerm); err != nil {
+				log.Fatalf("Failed to create bpf fs subpath: %v", err)
 			}
 		} else {
 			log.Fatalf("Failed to create bpf fs subpath: %v", err)

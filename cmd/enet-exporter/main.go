@@ -17,12 +17,11 @@ import (
 )
 
 func main() {
-	logger := logrus.New()
-	logger.SetFormatter(&logrus.TextFormatter{
+	logrus.SetFormatter(&logrus.TextFormatter{
 		DisableTimestamp: true,
 	})
-	cmd := root.NewCommand(logger)
+	cmd := root.NewCommand()
 	if err := cmd.Execute(); err != nil {
-		logger.Errorf("Failed to execute enet: %v", err)
+		logrus.Errorf("Failed to execute enet: %v", err)
 	}
 }

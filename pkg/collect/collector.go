@@ -43,8 +43,8 @@ func NewENetCollector() *ENetCollector {
 	return &ENetCollector{
 		aclMetrics: typedDesc{
 			prometheus.NewDesc(
-				namespace+"acl_rule_hit_counts",
-				"eNet ACL rule hit counts",
+				namespace+"acl_rule_hit_count",
+				"eNet ACL rule hit count",
 				[]string{
 					"prior",
 					"strategy", // native generic offloaded
@@ -62,8 +62,8 @@ func NewENetCollector() *ENetCollector {
 		},
 		natMetrics: typedDesc{
 			prometheus.NewDesc(
-				namespace+"nat_rule_hit_counts",
-				"eNet NAT rule hit counts",
+				namespace+"nat_rule_hit_count",
+				"eNet NAT rule hit count",
 				[]string{
 					"type", // dnat snat fullnat
 					"prior",

@@ -27,7 +27,7 @@ var (
 	url  string
 )
 
-func NewCommand(logger *logrus.Logger) *cobra.Command {
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "enet-exporter",
 		Short:   "eNet Exporter is a exporter for prometheus, collecting network message generated from eNet CLI.",
@@ -35,9 +35,9 @@ func NewCommand(logger *logrus.Logger) *cobra.Command {
 		Run: func(cmd *cobra.Command, args []string) {
 			prometheus.MustRegister(collect.NewENetCollector())
 			http.Handle(url, promhttp.Handler())
-			logger.Infof("eNet Exporter serve on %v use port %v.", url, port)
+			logrus.Infof("eNet Exporter serve on %v use port %v.", url, port)
 			if err := http.ListenAndServe(fmt.Sprintf(":%v", port), nil); err != nil {
-				logger.Fatalf(err.Error())
+				logrus.Fatalf(err.Error())
 			}
 		},
 	}

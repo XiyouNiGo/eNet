@@ -16,13 +16,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewRemoveCommand(logger *logrus.Logger) *cobra.Command {
+func NewRemoveCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "remove",
 		Short:   "Remove a rule from NAT",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
-			logger.Fatal("This command is being developing.")
+			logrus.Fatal("This command is being developing.")
 		},
 	}
 	return cmd

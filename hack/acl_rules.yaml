@@ -1,0 +1,9 @@
+- priority: 200
+  proto: TCP
+  src: 172.20.6.7
+  action: PASS
+- priority: 100
+  proto: TCP
+  dst: 172.20.6.3
+  dport: 80
+  action: DROP

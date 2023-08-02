@@ -15,17 +15,16 @@ import (
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/attach"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/detach"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp/purge"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func NewXDPCommand(logger *logrus.Logger) *cobra.Command {
+func NewXDPCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "xdp",
 		Short: "Command about eXpress Data Path",
 	}
-	cmd.AddCommand(attach.NewAttachCommand(logger))
-	cmd.AddCommand(detach.NewDetachCommand(logger))
-	cmd.AddCommand(purge.NewPurgeCommand(logger))
+	cmd.AddCommand(attach.NewAttachCommand())
+	cmd.AddCommand(detach.NewDetachCommand())
+	cmd.AddCommand(purge.NewPurgeCommand())
 	return cmd
 }

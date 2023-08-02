@@ -24,16 +24,16 @@ var (
 	pinPath string
 )
 
-func NewPurgeCommand(logger *logrus.Logger) *cobra.Command {
+func NewPurgeCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "purge",
 		Short:   "Purge the XDP program and map",
 		Example: "TODO",
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := os.RemoveAll(pinPath); err != nil {
-				logger.Fatalf("Failed to purge XDP program and map on %v: %v", pinPath, err)
+				logrus.Fatalf("Failed to purge XDP program and map on %v: %v", pinPath, err)
 			}
-			logger.Infof("XDP program and map successfully purged from %v", pinPath)
+			logrus.Infof("XDP program and map successfully purged from %v", pinPath)
 		},
 	}
 	cmd.Flags().StringVarP(&pinPath, "pin-path", "p", path.Join(xdp.BpfFsPath,

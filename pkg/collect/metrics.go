@@ -17,8 +17,8 @@ import (
 )
 
 type Metrics struct {
-	LabelValues []string
-	HitCount    float64
+	LabelValues []string `yaml:"label_values"`
+	HitCount    float64  `yaml:"hit_count"`
 }
 
 var (

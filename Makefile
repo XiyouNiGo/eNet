@@ -30,11 +30,11 @@ COMMITID = $(shell git rev-parse --short HEAD)
 all: enet-cli enet-exporter
 
 .PHONY: enet-cli
-enet-cli: fmt-go vet gen-xdp
+enet-cli: gen-xdp fmt-go vet
 	@$(GO) build -o ./_output/$(GOOS)/$(GOARCH)/enet ./cmd/enet-cli/main.go
 
 .PHONY: enet-exporter
-enet-exporter: fmt-go vet gen-xdp
+enet-exporter: gen-xdp fmt-go vet
 	@$(GO) build -o ./_output/$(GOOS)/$(GOARCH)/enet-exporter ./cmd/enet-exporter/main.go
 
 .PHONY: cross
@@ -149,3 +149,8 @@ port-forward:
   echo "localhost:${PROM_FORWARD_PORT} - prometheus"; \
   echo "localhost:${GRAF_FORWARD_PORT} - grafana"; \
   echo "localhost:${EXP_FORWARD_PORT} - enet exporter"; \
+
+.PHONY: install
+install:
+	@cp -f ./_output/$(GOOS)/$(GOARCH)/enet /usr/local/bin/; \
+	cp -f ./_output/$(GOOS)/$(GOARCH)/enet-exporter /usr/local/bin/; \

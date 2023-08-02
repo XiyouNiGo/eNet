@@ -15,17 +15,16 @@ import (
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl/add"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl/list"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/acl/remove"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func NewACLCommand(logger *logrus.Logger) *cobra.Command {
+func NewACLCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "acl",
 		Short: "Command about Access Control List",
 	}
-	cmd.AddCommand(add.NewAddCommand(logger))
-	cmd.AddCommand(list.NewListCommand(logger))
-	cmd.AddCommand(remove.NewRemoveCommand(logger))
+	cmd.AddCommand(add.NewAddCommand())
+	cmd.AddCommand(list.NewListCommand())
+	cmd.AddCommand(remove.NewRemoveCommand())
 	return cmd
 }

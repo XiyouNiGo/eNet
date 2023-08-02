@@ -16,18 +16,17 @@ import (
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/nat"
 	"github.com/XiyouNiGo/eNet/cmd/enet-cli/xdp"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
-func NewCommand(logger *logrus.Logger) *cobra.Command {
+func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "enet",
 		Short:   "eNet is a eBPF-based net tool, which supporting ACL and NAT now.",
 		Version: "0.0.0",
 	}
-	cmd.AddCommand(acl.NewACLCommand(logger))
-	cmd.AddCommand(nat.NewNATCommand(logger))
-	cmd.AddCommand(xdp.NewXDPCommand(logger))
+	cmd.AddCommand(acl.NewACLCommand())
+	cmd.AddCommand(nat.NewNATCommand())
+	cmd.AddCommand(xdp.NewXDPCommand())
 	return cmd
 }

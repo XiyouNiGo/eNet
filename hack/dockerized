@@ -1,4 +1,5 @@
-BUILDER=${BUILDER:-ghcr.io/cilium/ebpf-builder}
+#!/bin/bash
+BUILDER=${BUILDER:-skydive/ebpf-builder}
 
 docker pull ${BUILDER}
 
